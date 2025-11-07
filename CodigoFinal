@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Protocolo de Performance</title>
+    <!-- Carrega o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega a biblioteca Marked.js para renderizar Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilização da fonte principal */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Estilização do loader (spinner) */
+        .loader {
+            border: 4px solid #f3f3f3; /* Cinza claro */
+            border-top: 4px solid #3b82f6; /* Azul */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilização para o conteúdo do relatório gerado (output) */
+        #report-output {
+            background-color: #f9fafb; /* Fundo quase branco para o relatório */
+            color: #1f2937; /* Texto escuro */
+            border-radius: 8px;
+            padding: 24px;
+        }
+        #report-output h2 {
+            font-size: 1.5rem; /* 24px */
+            font-weight: 700;
+            margin-top: 1.5rem; /* 24px */
+            margin-bottom: 0.5rem; /* 8px */
+            border-bottom: 2px solid #e5e7eb; /* Cinza claro */
+            padding-bottom: 0.25rem; /* 4px */
+        }
+        #report-output h3 {
+            font-size: 1.25rem; /* 20px */
+            font-weight: 600;
+            margin-top: 1.25rem; /* 20px */
+            margin-bottom: 0.5rem; /* 8px */
+        }
+        #report-output p {
+            margin-bottom: 1rem; /* 16px */
+            line-height: 1.6;
+        }
+        #report-output ul {
+            list-style-type: disc;
+            margin-left: 1.5rem; /* 24px */
+            margin-bottom: 1rem; /* 16px */
+        }
+        #report-output table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem; /* 16px */
+            overflow-x: auto;
+            display: block;
+        }
+        #report-output th, #report-output td {
+            border: 1px solid #d1d5db; /* Cinza */
+            padding: 0.75rem; /* 12px */
+            text-align: left;
+        }
+        #report-output th {
+            background-color: #f3f4f6; /* Cinza bem claro */
+            font-weight: 600;
+        }
+        #report-output strong {
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto bg-gray-800 p-6 sm:p-8 rounded-lg shadow-2xl">
+        
+        <h1 class="text-3xl font-bold text-center text-white mb-6">
+            Gerador de Protocolo de Performance
+        </h1>
+        
+        <p class="text-center text-gray-300 mb-8">
+            Insira seus dados abaixo para receber um protocolo de treino, dieta e recuperação 
+            cientificamente embasado e 100% personalizado.
+        </p>
+
+        <!-- Formulário de Coleta de Dados -->
+        <form id="protocol-form" class="space-y-6">
+
+            <!-- Seção 1: Objetivos -->
+            <div>
+                <label for="objetivos" class="block text-sm font-medium text-gray-200 mb-2">
+                    Seu Objetivo Principal
+                </label>
+                <textarea id="objetivos" rows="3" class="w-full bg-gray-700 border border-gray-600 text-white rounded-md p-3 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: Maximizar hipertrofia, correr minha primeira meia maratona, perder 10kg de gordura, etc."></textarea>
+            </div>
+
+            <!-- Seção 2: Restrições -->
+            <div>
+                <label for="restricoes" class="block text-sm font-medium text-gray-200 mb-2">
+                    Restrições e Condições
+                </label>
+                <textarea id="restricoes" rows="3" class="w-full bg-gray-700 border border-gray-600 text-white rounded-md p-3 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: Acne severa, dor crônica no joelho esquerdo, pouco tempo, sou vegano, tenho hérnia de disco (L5-S1), etc."></textarea>
+            </div>
+
+            <!-- Seção 3: Biometria -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div>
+                    <label for="idade" class="block text-sm font-medium text-gray-200 mb-2">Idade</label>
+                    <input type="number" id="idade" class="w-full bg-gray-700 border border-gray-600 text-white rounded-md p-3 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: 25">
+                </div>
+                <div>
+                    <label for="altura" class="block text-sm font-medium text-gray-200 mb-2">Altura (cm)</label>
+                    <input type="number" id="altura" class="w-full bg-gray-700 border border-gray-600 text-white rounded-md p-3 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: 175">
+                </div>
+                <div>
+                    <label for="peso" class="block text-sm font-medium text-gray-200 mb-2">Peso (kg)</label>
+                    <input type="number" id="peso" class="w-full bg-gray-700 border border-gray-600 text-white rounded-md p-3 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: 75">
+                </div>
+            </div>
+
+            <!-- Seção 4: Rotina -->
+            <div>
+                <label for="rotina" class="block text-sm font-medium text-gray-200 mb-2">
+                    Sua Rotina Semanal
+                </label>
+                <textarea id="rotina" rows="4" class="w-full bg-gray-700 border border-gray-600 text-white rounded-md p-3 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Descreva sua semana. Ex: 'Trabalho das 9h às 18h, seg-sex. Posso treinar 4x por semana, preferencialmente à noite (por 60-75 min). Gosto de correr aos sábados de manhã.'"></textarea>
+            </div>
+
+            <!-- Botão de Envio -->
+            <div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300 text-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                    Gerar Meu Protocolo
+                </button>
+            </div>
+        </form>
+
+        <!-- Indicador de Carregamento (Loader) -->
+        <div id="loader" class="hidden flex-col items-center justify-center mt-10">
+            <div class="loader"></div>
+            <p class="text-gray-300 mt-4">Analisando seu perfil e gerando seu protocolo...</p>
+            <p class="text-gray-400 text-sm">Isso pode levar até 60 segundos.</p>
+        </div>
+
+        <!-- Mensagem de Erro -->
+        <div id="error-message" class="hidden text-center mt-8 p-4 bg-red-800 text-red-100 rounded-lg">
+            <!-- Mensagens de erro serão inseridas aqui -->
+        </div>
+
+        <!-- Área de Resultado (Relatório) -->
+        <div id="report-output" class="hidden mt-10">
+            <!-- O relatório gerado em Markdown/HTML será inserido aqui -->
+        </div>
+    </div>
+
+    <script type="module">
+        // --- Seletores do DOM ---
+        const protocolForm = document.getElementById('protocol-form');
+        const loader = document.getElementById('loader');
+        const reportOutput = document.getElementById('report-output');
+        const errorMessage = document.getElementById('error-message');
+
+        // --- Configuração da API ---
+        // A API Key será injetada pelo ambiente, não é necessário alterá-la.
+        const apiKey = ""; 
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+        /**
+         * Função de fetch com retry e backoff exponencial.
+         * Essencial para lidar com picos de tráfego na API.
+         */
+        async function fetchWithBackoff(url, options, retries = 5, delay = 1000) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    if (response.status === 429 && retries > 0) {
+                        // Erro de "Too Many Requests" (429), tenta novamente com backoff
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return fetchWithBackoff(url, options, retries - 1, delay * 2);
+                    }
+                    throw new Error(`Erro na API: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            } catch (error) {
+                if (retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchWithBackoff(url, options, retries - 1, delay * 2);
+                }
+                // Não loga o erro de retry no console, apenas o erro final.
+                console.error("Erro final na API após retentativas:", error);
+                throw error;
+            }
+        }
+
+        /**
+         * Manipulador principal do envio do formulário.
+         */
+        protocolForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Impede o recarregamento da página
+
+            // 1. Coletar dados do formulário
+            const objetivos = document.getElementById('objetivos').value;
+            const restricoes = document.getElementById('restricoes').value;
+            const idade = document.getElementById('idade').value;
+            const altura = document.getElementById('altura').value;
+            const peso = document.getElementById('peso').value;
+            const rotina = document.getElementById('rotina').value;
+
+            // Validação simples
+            if (!objetivos || !idade || !altura || !peso || !rotina) {
+                showError("Por favor, preencha todos os campos obrigatórios.");
+                return;
+            }
+
+            // 2. Mostrar loader e limpar resultados anteriores
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+            reportOutput.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+            reportOutput.innerHTML = '';
+
+            // 3. Construir o Prompt para a API
+            // Este é o "cérebro" do app.
+            const systemPrompt = `
+                Você é um fisiologista esportivo de elite, nutricionista e treinador de força.
+                Sua tarefa é gerar um protocolo de performance completo, detalhado e cientificamente embasado,
+                formatado em MARKDOWN, com base nos dados do usuário.
+
+                O relatório DEVE seguir esta estrutura exata:
+                
+                ## Parte 1: O Diagnóstico e Análise Fisiológica
+                (Analise a situação atual do usuário, seus objetivos e restrições.)
+
+                ## Parte 2: A Arquitetura da Periodização
+                (Crie uma TABELA detalhada com a agenda semanal, integrando os treinos com a rotina do usuário.)
+
+                ## Parte 3: O Protocolo de Treino
+                (Crie TABELAS detalhadas para cada sessão de treino - ex: Treino A, Treino B. Inclua exercícios, séries, repetições e RIR/descanso.)
+
+                ## Parte 4: A Estratégia Nutricional
+                (Calcule o TDEE e as metas de macronutrientes. Crie uma TABELA de cardápio exemplo de um dia.)
+
+                ## Parte 5: O Protocolo de Suplementação
+                (Crie uma TABELA com suplementos essenciais, dosagem e justificativa.)
+
+                ## Parte 6: O Pilar da Recuperação
+                (Discuta a importância do sono e gestão de estresse para os objetivos do usuário.)
+
+                REGRAS CRÍTICAS:
+                1.  **Personalização Total:** Use TODOS os dados do usuário (idade, peso, rotina, etc.) para criar o plano.
+                2.  **Restrições são LEI:** Se o usuário mencionar 'acne', EVITE laticínios (incluindo whey) e alto IG, e explique a ligação com o $IGF-1$. Se mencionar 'dor no joelho', modifique o treino de pernas (ex: mais cadeia posterior, menos agachamento profundo).
+                3.  **Seja Científico:** Use termos como '$mTOR$', '$AMPK$', 'Sobrecarga Progressiva', mas explique-os de forma simples.
+                4.  **Formato:** A saída DEVE ser em MARKDOWN.
+            `;
+
+            const userQuery = `
+                Por favor, gere meu protocolo de performance com base nos seguintes dados:
+                - **Objetivo Principal:** ${objetivos}
+                - **Restrições/Condições:** ${restricoes || "Nenhuma informada"}
+                - **Idade:** ${idade} anos
+                - **Altura:** ${altura} cm
+                - **Peso:** ${peso} kg
+                - **Rotina Semanal:** ${rotina}
+            `;
+
+            // 4. Montar o payload da API
+            const payload = {
+                contents: [{ 
+                    parts: [{ text: userQuery }] 
+                }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            // 5. Chamar a API e processar a resposta
+            try {
+                const result = await fetchWithBackoff(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const markdownText = candidate.content.parts[0].text;
+                    
+                    // Renderiza o Markdown para HTML usando a biblioteca marked.js
+                    reportOutput.innerHTML = marked.parse(markdownText);
+                    
+                    // Exibe o resultado
+                    loader.classList.add('hidden');
+                    loader.classList.remove('flex');
+                    reportOutput.classList.remove('hidden');
+                } else {
+                    throw new Error("A resposta da API estava vazia ou em formato inesperado.");
+                }
+
+            } catch (error) {
+                console.error("Erro ao gerar protocolo:", error);
+                showError("Houve um erro ao gerar seu protocolo. Por favor, tente novamente mais tarde.");
+            }
+        });
+
+        /**
+         * Função auxiliar para exibir mensagens de erro.
+         */
+        function showError(message) {
+            loader.classList.add('hidden');
+            loader.classList.remove('flex');
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+    </script>
+</body>
+</html>
